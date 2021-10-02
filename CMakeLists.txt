@@ -37,6 +37,10 @@ if (EMSCRIPTEN)
     set(LFLAGS "${LFLAGS} -s ALLOW_MEMORY_GROWTH=1")
     set(LFLAGS "${LFLAGS} -s NO_DYNAMIC_EXECUTION=1")
 
+    # set(LFLAGS "${LFLAGS} --preload-file examples")
+
+    set(LFLAGS "${LFLAGS} --preload-file examples/2D/02_pixelspiritdeck/lib")
+    set(LFLAGS "${LFLAGS} --preload-file examples/3D/00_pipeline/01_postprocessing.frag")
     set(LFLAGS "${LFLAGS} --preload-file examples/3D/03_models/dragon.obj")
     
     set_target_properties(glslViewer PROPERTIES LINK_FLAGS "${LFLAGS}")
