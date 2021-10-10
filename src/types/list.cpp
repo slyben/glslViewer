@@ -8,7 +8,7 @@ List merge(const List &_A,const List &_B) {
     // std::merge on Windows would expect _A and _B to be already sorted to work
     List rta(_A);
 
-    rta.insert(rta.begin(), _B.begin(), _B.end());      // rta = _A + _B
+    rta.insert(rta.end(), _B.begin(), _B.end());      // rta = _A + _B
     rta.erase(std::unique(rta.begin(), rta.end()), rta.end());  // remove duplicates
     std::sort(rta.begin(), rta.end());  // sort the resulting List
 #else
