@@ -14,4 +14,3 @@ if (NOT EMSCRIPTEN)
     add_subdirectory(liblo/cmake)
     
 endif()
-

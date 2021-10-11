@@ -1,6 +1,13 @@
 cmake_minimum_required(VERSION 3.2)
 
-project(glslViewer)
+set(VERSION 2.0)
+project(glslViewer 
+            VERSION ${VERSION}
+            LANGUAGES CXX )
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 if(MSVC)
 	add_definitions( -DPLATFORM_WINDOWS )
@@ -27,7 +34,10 @@ set_target_properties(glslViewer PROPERTIES
 # The compiled ADA 
 add_subdirectory(deps)
 
-target_include_directories(glslViewer PUBLIC ${PROJECT_SOURCE_DIR}/deps )
+target_include_directories(glslViewer PUBLIC 
+    ${PROJECT_SOURCE_DIR}/deps 
+)
+
 target_link_libraries(glslViewer PRIVATE ada phonedepth)
 
 if (EMSCRIPTEN)    
@@ -48,8 +58,8 @@ if (EMSCRIPTEN)
     # # Create a new HTML
     # set_target_properties(glslViewer PROPERTIES SUFFIX ".html")
     
-    # # Copy the default index.html 
-    # file(COPY   assets/index.html DESTINATION ${CMAKE_CURRENT_BINARY_DIR} )
+    # Copy the default index.html 
+    file(COPY   assets/index.html DESTINATION ${CMAKE_CURRENT_BINARY_DIR} )
 
     # Add examples
     file(COPY   examples DESTINATION ${CMAKE_CURRENT_BINARY_DIR} )
@@ -60,29 +70,34 @@ if (EMSCRIPTEN)
     set(LFLAGS "${LFLAGS} --preload-file examples/3D/01_lighting/01_shadows.frag")
     set(LFLAGS "${LFLAGS} --preload-file examples/3D/01_lighting/02_cubemap.frag")
     set(LFLAGS "${LFLAGS} --preload-file examples/3D/03_models/dragon.obj")
-    set(LFLAGS "${LFLAGS} --preload-file examples/3D/04_vertex")
+    # set(LFLAGS "${LFLAGS} --preload-file examples/3D/04_vertex")
     
     set_target_properties(glslViewer PROPERTIES LINK_FLAGS "${LFLAGS}")
     target_link_libraries(glslViewer PRIVATE glfw)
     
 else()
+
     target_compile_definitions(glslViewer PUBLIC 
         SUPPORT_MULTITHREAD_RECORDING 
         SUPPORT_OSC
         SUPPORT_AUDIO
         # SUPPORT_PLY_BINARY
     )
-    if(MSVC)
+
+    if (MSVC)
 	    target_link_libraries(glslViewer PRIVATE lo_static Ws2_32.lib Iphlpapi.lib)
+        
     else()
-    	target_link_libraries(glslViewer PRIVATE lo_static pthread dl)
-    endif()
+        if (APPLE)
+            target_link_libraries(glslViewer PRIVATE lo_static pthread dl)
 
-    if (NOT APPLE AND NOT MSVC)
-        target_link_libraries(glslViewer PRIVATE atomic)
-    endif()
+        else()
+            target_link_libraries(glslViewer PRIVATE lo atomic pthread dl)
 
-    install(TARGETS glslViewer)
+        endif()
+
+        install(TARGETS glslViewer RUNTIME DESTINATION /usr/local/bin )
+    endif()
 
 endif()
 
